@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submission History</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .submission {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      .submission h3 {
+        margin: 0 0 10px 0;
+      }
+      .submission p {
+        margin: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="{% url 'evaluate_essay' %}"> Submit New Essay</a>
+    <h1>Previous Essay Submissions</h1>
+
+    <div>
+      {% for submission in submissions %}
+
+      <div class="submission">
+        <h3>
+          <a href="{% url 'submission_detail' submission.id %}"
+            >{{ submission.title }}</a
+          >
+        </h3>
+
+        <p><strong>Submitted on:</strong> {{ submission.submitted_at }}</p>
+        <p>
+          <strong>Relevance to topic:</strong> {{submission.relevance_to_topic}}
+        </p>
+        <p>
+          <strong>Number of spelling errors:</strong> {{
+          submission.spelling_errors_count }}
+        </p>
+        <p>
+          <strong>List of spelling errors:</strong> {{
+          submission.spelling_errors }}
+        </p>
+        <p><strong>Score of essay:</strong> {{ submission.score_of_essay }}</p>
+      </div>
+      {% empty %}
+      <p>No submissions found.</p>
+      {% endfor %}
+    </div>
+  </body>
+</html>
