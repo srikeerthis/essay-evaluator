@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Essay Evaluator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #result {
+        margin-top: 20px;
+      }
+      .formatted-result {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .formatted-result p {
+        margin: 5px 0;
+        font-size: 16px;
+      }
+      .formatted-result ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+      .formatted-result ul li {
+        margin: 3px 0;
+      }
+      .highlight {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="{% url 'submission_history' %}">View Submission History</a>
+
+    <h1>Submit Your Essay for Evaluation</h1>
+    <form id="essayForm">
+      {% csrf_token %}
+      <div>
+        <label for="title">Essay Title:</label><br />
+        <input type="text" id="title" name="title" required /><br /><br />
+      </div>
+      <div>
+        <label for="essay">Essay:</label><br />
+        <textarea
+          id="essay"
+          name="essay"
+          rows="10"
+          cols="80"
+          placeholder="Paste your essay here"
+          required
+        ></textarea
+        ><br /><br />
+      </div>
+      <button type="submit">Submit Essay</button>
+    </form>
+
+    <div id="result">
+      <h2>Evaluation Results</h2>
+      <div class="formatted-result" id="formattedDisplay"></div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        $("#essayForm").on("submit", function (event) {
+          event.preventDefault();
+
+          var formData = {
+            title: $("#title").val(),
+            essay: $("#essay").val(),
+            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val(),
+          };
+
+          $.ajax({
+            type: "POST",
+            url: "/",
+            data: formData,
+            dataType: "json",
+            success: function (response) {
+              var formattedHtml = `
+                            <p><span class="highlight">Relevance of content to topic:</span> ${
+                              response.relevance_to_topic
+                            }</p>
+                            <p><span class="highlight">Number of spelling errors:</span> ${
+                              response.spelling_errors_count
+                            }</p>
+                            <p><span class="highlight">List of spelling errors:</span> ${
+                              response.spelling_errors.join(", ") || "None"
+                            }</p>
+                            <p><span class="highlight">Feedback on content:</span></p>
+                            <ul>
+                                <li><span class="highlight">Strength:</span> ${
+                                  response.feedback.strength || "N/A"
+                                }</li>
+                                <li><span class="highlight">Weakness:</span> ${
+                                  response.feedback.weakness || "N/A"
+                                }</li>
+                                <li><span class="highlight">Suggestions:</span> ${
+                                  response.feedback.suggestion || "N/A"
+                                }</li>
+                            </ul>
+                            <p><span class="highlight">Score of essay on a scale of 1 to 10:</span> ${
+                              response.score_of_essay
+                            }</p>
+                        `;
+
+              $("#formattedDisplay").html(formattedHtml);
+            },
+            error: function (error) {
+              $("#formattedDisplay").html(
+                "<p>Error occurred while processing the request.</p>"
+              );
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
