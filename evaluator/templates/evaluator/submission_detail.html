@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ submission.title }} - Detailed View</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .submission {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      h1,
+      h3 {
+        margin-bottom: 15px;
+      }
+      .back-link {
+        margin-top: 20px;
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ submission.title }}</h1>
+
+    <div class="submission">
+      <p><strong>Submitted on:</strong> {{ submission.submitted_at }}</p>
+      <p>
+        <strong>Relevance to topic:</strong> {{ submission.relevance_to_topic }}
+      </p>
+      <p>
+        <strong>Number of spelling errors:</strong> {{ submission.spelling_errors_count }}
+      </p>
+      <p>
+        <strong>List of spelling errors:</strong> {{ submission.spelling_errors }}
+      </p>
+      <p><strong>Feedback on content:</strong></p>
+      <ul>
+        <li><strong>Strength:</strong> {{ submission.feedback_strength }}</li>
+        <li><strong>Weakness:</strong> {{ submission.feedback_weakness }}</li>
+        <li>
+          <strong>Suggestions:</strong> {{ submission.feedback_suggestion }}
+        </li>
+      </ul>
+      <p><strong>Score of essay:</strong> {{ submission.score_of_essay }}</p>
+      <h3>Essay Content</h3>
+      <p>{{ submission.essay }}</p>
+    </div>
+
+    <a href="{% url 'submission_history' %}" class="back-link"
+      >Back to History</a
+    >
+  </body>
+</html>
