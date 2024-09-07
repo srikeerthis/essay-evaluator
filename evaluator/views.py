@@ -12,8 +12,6 @@ load_dotenv()
 
 # Load OpenAI API key from environment variable or Django settings
 OPENAI_API_KEY= os.getenv("OPEN_API_KEY")
-model = os.getenv("MODEL")
-message = os.getenv("MESSAGE")
 
 def clean_text(text):
     # Remove punctuation from text, keeping only words and spaces
@@ -35,11 +33,25 @@ def evaluate_essay(request):
         spelling_errors_count = len(spelling_errors)
 
         # 2. Ask OpenAI to evaluate the content relevance
+        model = os.getenv("MODEL")
+        # Load the prompts from .env file
+        system_prompt = os.getenv('SYSTEM_PROMPT')
+        essay_prompt = os.getenv('ESSAY_PROMPT').format(title=title, essay=essay)
+        relevance_prompt = os.getenv('RELEVANCE_PROMPT').format(title=title)
+        feedback_prompt = os.getenv('FEEDBACK_PROMPT')
+        response_format_prompt = os.getenv('RESPONSE_FORMAT_PROMPT')
+
         client = OpenAI()
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages= message
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": essay_prompt},
+                    {"role": "user", "content": relevance_prompt},
+                    {"role": "user", "content": feedback_prompt},
+                    {"role": "user", "content": response_format_prompt}
+                ]
             )        
             feedback = response.choices[0].message.content.strip("feedback:").lower()
             # Parse the response content as a JSON object
